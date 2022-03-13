@@ -5,12 +5,16 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.work.mise.data.Repository
+import com.work.mise.data.model.airquality.Grade
+import com.work.mise.data.model.airquality.MeasuredValue
+import com.work.mise.data.model.monitoringstation.MonitoringStation
 import com.work.mise.databinding.ActivityMainBinding
 
 import kotlinx.coroutines.MainScope
@@ -95,10 +99,57 @@ class MainActivity : AppCompatActivity() {
         ).addOnSuccessListener { location ->
             //location 정보를 받아온 걸 성공하였으며
             //실제로 api 를 호출한 부분이므로 launch로 시작한다.
-            scope.launch {
-                val monitoringStation = Repository.getNearbyMonitoringStation(location.longitude,location.latitude)
+            Log.d("locationLog", location.toString())
+            Log.d("location", location.toString())
 
-                binding.textView.text = monitoringStation?.stationName
+            scope.launch {
+                val monitoringStation =
+                    Repository.getNearbyMonitoringStation(location.longitude, location.latitude)
+
+                val measuredValue =
+                    Repository.getLatestAirQualityData(monitoringStation!!.stationName!!)
+
+                displayAirQualityData(monitoringStation,measuredValue!!)
+
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    fun displayAirQualityData(monitoringStation: MonitoringStation, measuredValue: MeasuredValue) {
+        binding.measuringStationNameTextView.text = monitoringStation.stationName
+        binding.measuringStationAddressTextView.text = monitoringStation.addr
+
+        (measuredValue.khaiGrade ?: Grade.UNKNOWN).let { grade ->
+            binding.root.setBackgroundResource(grade.colorResId)
+            binding.totalGradeLabelTextView.text = grade.label
+            binding.totalGradeEmojiTextView.text = grade.emoji
+        }
+        with(measuredValue) {
+            binding.fineDustInformationTextView.text =
+                "미세먼지: $pm10Value ㎍/㎥ ${(pm10Grade ?: Grade.UNKNOWN).emoji}"
+            binding.ultraFineDustInformationTextView.text =
+                "초미세먼지: $pm25Value ㎍/㎥ ${(pm25Grade ?: Grade.UNKNOWN).emoji}"
+
+            with(binding.so2Item) {
+                labelTextView.text = "아황산가스"
+                gradeTextView.text = (so2Grade ?: Grade.UNKNOWN).toString()
+                valueTextView.text = "$so2Value ppm"
+            }
+            with(binding.coItem) {
+                labelTextView.text = "일산화탄소"
+                gradeTextView.text = (coGrade ?: Grade.UNKNOWN).toString()
+                valueTextView.text = "$coValue ppm"
+            }
+            with(binding.o3Item) {
+                labelTextView.text = "오존"
+                gradeTextView.text = (o3Grade ?: Grade.UNKNOWN).toString()
+                valueTextView.text = "$o3Value ppm"
+            }
+            with(binding.no2Item) {
+                labelTextView.text = "이산화질소"
+                gradeTextView.text = (no2Grade ?: Grade.UNKNOWN).toString()
+                valueTextView.text = "$no2Value ppm"
             }
         }
     }

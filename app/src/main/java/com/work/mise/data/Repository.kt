@@ -1,6 +1,9 @@
 package com.work.mise.data
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.work.mise.BuildConfig
+import com.work.mise.data.model.airquality.MeasuredValue
 import com.work.mise.data.model.monitoringstation.MonitoringStation
 import com.work.mise.data.services.AirKoreaApiService
 import com.work.mise.data.services.kakaoLocalApiService
@@ -33,10 +36,22 @@ object Repository {
             ?.monitoringStations
             ?.minByOrNull { it.tm ?:Double.MAX_VALUE }
     }
+
+    suspend fun getLatestAirQualityData(stationName:String):MeasuredValue?=
+        airKoreaApiService
+            .getRealtimeAirQualities(stationName)
+            .body()
+            ?.response
+            ?.body
+            ?.measuredValues
+            ?.firstOrNull()
+
     private val airKoreaApiService: AirKoreaApiService by lazy{
+        val gson: Gson = GsonBuilder().setLenient().create()
+
         Retrofit.Builder()
             .baseUrl(Url.AIR_KOREA_API_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())//gson으로 Convert 해야한다.
+            .addConverterFactory(GsonConverterFactory.create(gson))//gson으로 Convert 해야한다.
             .client(buildHttpClient())
             .build()
             .create()
