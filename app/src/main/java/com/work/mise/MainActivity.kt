@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        bindViews()
         initVariables()
         requestLocationPermissions()
     }
@@ -68,6 +70,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun bindViews(){
+        binding.refresh.setOnRefreshListener {
+            fetchAirQualityData()
+        }
+    }
     //초기화
     private fun initVariables() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -103,6 +110,10 @@ class MainActivity : AppCompatActivity() {
             Log.d("location", location.toString())
 
             scope.launch {
+                binding.errorDescriptionTextView.visibility = View.GONE
+                try{
+
+
                 val monitoringStation =
                     Repository.getNearbyMonitoringStation(location.longitude, location.latitude)
 
@@ -110,13 +121,23 @@ class MainActivity : AppCompatActivity() {
                     Repository.getLatestAirQualityData(monitoringStation!!.stationName!!)
 
                 displayAirQualityData(monitoringStation,measuredValue!!)
-
+                }catch(exception: Exception){
+                    binding.errorDescriptionTextView.visibility = View.VISIBLE
+                    binding.contentLayout.alpha = 0F
+                }finally {
+                    binding.progressBar.visibility = View.GONE
+                    binding.refresh.isRefreshing = false
+                }
             }
         }
     }
 
     @SuppressLint("SetTextI18n")
     fun displayAirQualityData(monitoringStation: MonitoringStation, measuredValue: MeasuredValue) {
+        binding.contentLayout.animate()
+            .alpha(1F)
+            .start()
+
         binding.measuringStationNameTextView.text = monitoringStation.stationName
         binding.measuringStationAddressTextView.text = monitoringStation.addr
 
