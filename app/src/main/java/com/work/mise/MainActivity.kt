@@ -10,7 +10,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.work.mise.data.Repository
 import com.work.mise.databinding.ActivityMainBinding
+
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -20,7 +22,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private var cancellationTokenSource: CancellationTokenSource? = null
-    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
 
     private val scope = MainScope()
 
@@ -63,7 +67,6 @@ class MainActivity : AppCompatActivity() {
     //초기화
     private fun initVariables() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
     }
 
 
@@ -93,7 +96,9 @@ class MainActivity : AppCompatActivity() {
             //location 정보를 받아온 걸 성공하였으며
             //실제로 api 를 호출한 부분이므로 launch로 시작한다.
             scope.launch {
+                val monitoringStation = Repository.getNearbyMonitoringStation(location.longitude,location.latitude)
 
+                binding.textView.text = monitoringStation?.stationName
             }
         }
     }

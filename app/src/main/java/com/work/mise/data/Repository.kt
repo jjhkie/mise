@@ -1,6 +1,8 @@
 package com.work.mise.data
 
 import com.work.mise.BuildConfig
+import com.work.mise.data.model.monitoringstation.MonitoringStation
+import com.work.mise.data.services.AirKoreaApiService
 import com.work.mise.data.services.kakaoLocalApiService
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -12,17 +14,33 @@ import retrofit2.create
 object Repository {
 
     //주변 관측소 위치 확인
-    suspend fun getNearbyMonitoringStation(latitude: Double, longitude: Double){
+    suspend fun getNearbyMonitoringStation(longitude: Double, latitude: Double) : MonitoringStation?{
         val tmCoordinates = kakaoLocalApiService
-            .getTmCoordinates(latitude,longitude)
+            .getTmCoordinates(longitude,latitude)
             .body()
             ?.documents//배열로 되어있다.
             ?.firstOrNull()
 
         val tmX = tmCoordinates?.x
-        val txY = tmCoordinates?.y
-    }
+        val tmY = tmCoordinates?.y
 
+
+        return airKoreaApiService
+            .getNearbyMonitoringStation(tmX!!,tmY!!)
+            .body()
+            ?.response
+            ?.body
+            ?.monitoringStations
+            ?.minByOrNull { it.tm ?:Double.MAX_VALUE }
+    }
+    private val airKoreaApiService: AirKoreaApiService by lazy{
+        Retrofit.Builder()
+            .baseUrl(Url.AIR_KOREA_API_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())//gson으로 Convert 해야한다.
+            .client(buildHttpClient())
+            .build()
+            .create()
+    }
     private val kakaoLocalApiService: kakaoLocalApiService by lazy{
         Retrofit.Builder()
             .baseUrl(Url.KAKAO_API_BASE_URL)
