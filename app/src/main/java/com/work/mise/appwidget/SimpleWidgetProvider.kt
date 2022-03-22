@@ -35,7 +35,7 @@ class SimpleWidgetProvider : AppWidgetProvider() {
 
         ContextCompat.startForegroundService(
             context!!,
-            Intent(context,UpdateWidgetService::class.java)
+            Intent(context, UpdateWidgetService::class.java)
         )
     }
 
@@ -55,7 +55,7 @@ class SimpleWidgetProvider : AppWidgetProvider() {
                     Manifest.permission.ACCESS_BACKGROUND_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                val updateViews = RemoteViews(packageName, R.layout.widget_simple).apply{
+                val updateViews = RemoteViews(packageName, R.layout.widget_simple).apply {
                     setTextViewText(
                         R.id.resultTextView,
                         "권한 없음"
@@ -64,19 +64,23 @@ class SimpleWidgetProvider : AppWidgetProvider() {
 
                 updateWidget(updateViews)
                 stopSelf()
-                    //권한이 없는 경우
-                return super.onStartCommand(intent,flags, startId)
+                //권한이 없는 경우
+                return super.onStartCommand(intent, flags, startId)
             }
             LocationServices.getFusedLocationProviderClient(this).lastLocation
-                .addOnSuccessListener { location->
-                    lifecycleScope.launch{
-                        val nearbyMonitoringStation = Repository.getNearbyMonitoringStation(location.longitude,location.latitude)
-                        val measuredValue = Repository.getLatestAirQualityData(nearbyMonitoringStation!!.stationName!!)
-                        val updateViews = RemoteViews(packageName, R.layout.widget_simple).apply{
-                            setViewVisibility(R.id.labelTextView, View.VISIBLE)
+                .addOnSuccessListener { location ->
+                    lifecycleScope.launch {
+                        val nearbyMonitoringStation = Repository.getNearbyMonitoringStation(
+                            location.longitude,
+                            location.latitude
+                        )
+                        val measuredValue =
+                            Repository.getLatestAirQualityData(nearbyMonitoringStation!!.stationName!!)
+                        val updateViews = RemoteViews(packageName, R.layout.widget_simple).apply {
+                            setViewVisibility(R.id.widgetlabelTextView, View.VISIBLE)
                             setViewVisibility(R.id.gradeLabelTextView, View.VISIBLE)
 
-                            val currentGrade = (measuredValue?.khaiGrade?: Grade.UNKNOWN)
+                            val currentGrade = (measuredValue?.khaiGrade ?: Grade.UNKNOWN)
                             setTextViewText(R.id.resultTextView, currentGrade.emoji)
                             setTextViewText(R.id.gradeLabelTextView, currentGrade.label)
                         }
@@ -96,7 +100,7 @@ class SimpleWidgetProvider : AppWidgetProvider() {
         }
 
         private fun createChannelIfNeeded() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 (getSystemService(NOTIFICATION_SERVICE) as? NotificationManager)
                     ?.createNotificationChannel(
                         NotificationChannel(
@@ -110,18 +114,18 @@ class SimpleWidgetProvider : AppWidgetProvider() {
 
         private fun createNotification(): Notification =
             NotificationCompat.Builder(this)
-                .setChannelId(WIDGET_REFRESH_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_baseline_refresh_24)
+                .setChannelId(WIDGET_REFRESH_CHANNEL_ID)
                 .build()
 
-        private fun updateWidget(updateViews: RemoteViews){
-            val widgetProvider = ComponentName(this,SimpleWidgetProvider::class.java)
-            AppWidgetManager.getInstance(this).updateAppWidget(widgetProvider,updateViews)
+        private fun updateWidget(updateViews: RemoteViews) {
+            val widgetProvider = ComponentName(this, SimpleWidgetProvider::class.java)
+            AppWidgetManager.getInstance(this).updateAppWidget(widgetProvider, updateViews)
         }
     }
 
-    companion object{
-        private const val WIDGET_REFRESH_CHANNEL_ID ="WIDGET_REFRESH_CHANNEL_ID"
+    companion object {
+        private const val WIDGET_REFRESH_CHANNEL_ID = "WIDGET_REFRESH_CHANNEL_ID"
         private const val NOTIFICATION_ID = 101
     }
 }

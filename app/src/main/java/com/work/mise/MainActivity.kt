@@ -23,6 +23,7 @@ import com.work.mise.databinding.ActivityMainBinding
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 
 
 class MainActivity : AppCompatActivity() {
@@ -35,9 +36,16 @@ class MainActivity : AppCompatActivity() {
 
     private val scope = MainScope()
 
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        //현재 날짜 시간 구하기
+        val current: Long = System.currentTimeMillis()
+
+        val time = SimpleDateFormat("HHmm")
+        val today = SimpleDateFormat()
 
         bindViews()
         initVariables()
@@ -64,16 +72,17 @@ class MainActivity : AppCompatActivity() {
             requestCode == REQUEST_ACCESS_LOCATION_PERMISSIONS && grantResults[0] == PackageManager.PERMISSION_GRANTED
 
 
-        val backgroundLocationPermissionGranted = requestCode == REQUEST_ACCESS_LOCATION_PERMISSIONS && grantResults[0] == PackageManager.PERMISSION_GRANTED
+        val backgroundLocationPermissionGranted =
+            requestCode == REQUEST_BACKGROUND_ACCESS_LOCATION_PERMISSIONS && grantResults[0] == PackageManager.PERMISSION_GRANTED
 
-        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.R){
-            if(!backgroundLocationPermissionGranted){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!backgroundLocationPermissionGranted) {
                 requestBackgroundLocationPermissions()
-            }else{
+            } else {
                 fetchAirQualityData()
             }
 
-        }else {
+        } else {
 
             if (!locationPermissionGranted) {
                 finish()
@@ -85,11 +94,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun bindViews(){
+    private fun bindViews() {
         binding.refresh.setOnRefreshListener {
             fetchAirQualityData()
         }
     }
+
     //초기화
     private fun initVariables() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
@@ -137,20 +147,26 @@ class MainActivity : AppCompatActivity() {
 
             scope.launch {
                 binding.errorDescriptionTextView.visibility = View.GONE
-                try{
+                try {
 
 
-                val monitoringStation =
-                    Repository.getNearbyMonitoringStation(location.longitude, location.latitude)
+                    val monitoringStation =
+                        Repository.getNearbyMonitoringStation(location.longitude, location.latitude)
 
-                val measuredValue =
-                    Repository.getLatestAirQualityData(monitoringStation!!.stationName!!)
+                    val measuredValue =
+                        Repository.getLatestAirQualityData(monitoringStation!!.stationName!!)
 
-                displayAirQualityData(monitoringStation,measuredValue!!)
-                }catch(exception: Exception){
+                    val weatherValue =
+                        Repository.getWeatherData(location.longitude, location.latitude)
+
+                    Log.d("weather","$weatherValue")
+
+
+                    displayAirQualityData(monitoringStation, measuredValue!!)
+                } catch (exception: Exception) {
                     binding.errorDescriptionTextView.visibility = View.VISIBLE
                     binding.contentLayout.alpha = 0F
-                }finally {
+                } finally {
                     binding.progressBar.visibility = View.GONE
                     binding.refresh.isRefreshing = false
                 }

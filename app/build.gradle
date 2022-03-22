@@ -18,6 +18,7 @@ android {
         //buildConfigField "String", "KAKAO_API_KEY",'"03981950f60bd46"'
         buildConfigField "String", "KAKAO_API_KEY",project.properties["KAKAO_API_KEY"]
         buildConfigField "String", "AIRKOREA_SERVICE_KEY",project.properties["AIRKOREA_SERVICE_KEY"]
+        buildConfigField "String", "WEATHER_API_KEY",project.properties["WEATHER_API_KEY"]
     }
 
     buildTypes {
