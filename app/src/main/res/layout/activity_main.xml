@@ -31,6 +31,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:alpha="0"
+            tools:alpha="1"
             tools:background="@color/blue"
             tools:context=".MainActivity">
 
@@ -39,8 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
-                android:textColor="@color/white"
-                android:textSize="40sp"
+                android:textColor="@color/black"
+                android:textSize="26sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -48,11 +49,40 @@
                 tools:text="강남대로" />
 
             <TextView
+                android:id="@+id/measuringStationAddressTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:maxLines="1"
+                android:textColor="@color/black"
+                app:autoSizeMaxTextSize="12sp"
+                app:autoSizeMinTextSize="8sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/measuringStationNameTextView"
+                tools:text="측정소 위치: 서욼 강남대로..." />
+
+            <TextView
+                android:id="@+id/category_tmp_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="50sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/measuringStationAddressTextView"
+                tools:text="14" />
+
+            <TextView
                 android:id="@+id/totalGradeLabelTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="7dp"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="19sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -76,11 +106,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/mise_layout"
                 app:layout_constraintEnd_toStartOf="@id/ultraFineDustInformationTextView"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/totalGradeEmojiTextView"
                 tools:text="미세먼지: 40 😱" />
 
             <TextView
@@ -88,116 +118,153 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="16sp"
+                app:layout_constraintBottom_toTopOf="@+id/mise_layout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/fineDustInformationTextView"
-                app:layout_constraintTop_toTopOf="@id/fineDustInformationTextView"
                 tools:text="초미세먼지: 10 😱" />
 
-            <View
-                android:id="@+id/upperDivider"
+            <TextView
+                android:id="@+id/sky_state_text"
                 android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="20dp"
-                android:alpha="0.5"
-                android:background="@color/white"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/fineDustInformationTextView" />
+                app:layout_constraintTop_toBottomOf="@+id/category_tmp_text"
+                tools:text="Mostly cloudy" />
 
             <LinearLayout
+                android:id="@+id/weather_center_layout"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:paddingHorizontal="5dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sky_state_text">
+                <!--1-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rain"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:src="@drawable/rain_icons" />
+
+                        <TextView
+                            android:id="@+id/rain_POP_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="4m/s" />
+
+                    </LinearLayout>
+                </LinearLayout>
+                <!--2-->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="wind"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="5dp"
+                            android:src="@drawable/windy_icon" />
+
+                        <TextView
+                            android:id="@+id/wind_WSD_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="4m/s" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!--3-->
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/mise_layout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginVertical="30dp"
                 android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@id/lowerDivider"
+                android:paddingHorizontal="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/upperDivider">
+                tools:background="@color/blue">
 
                 <include
                     android:id="@+id/so2Item"
                     layout="@layout/view_measured_item"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content" />
 
                 <include
                     android:id="@+id/coItem"
                     layout="@layout/view_measured_item"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content" />
 
                 <include
                     android:id="@+id/o3Item"
                     layout="@layout/view_measured_item"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content"
+
+                    />
 
                 <include
                     android:id="@+id/no2Item"
                     layout="@layout/view_measured_item"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="wrap_content" />
 
 
             </LinearLayout>
 
-            <View
-                android:id="@+id/lowerDivider"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginBottom="12dp"
-                android:alpha="0.5"
-                android:background="@color/white"
-                app:layout_constraintBottom_toTopOf="@id/measuringStationAddressTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/measuringStationAddressTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="30dp"
-                android:layout_marginBottom="20dp"
-                android:maxLines="1"
-                android:textColor="@color/white"
-                app:autoSizeMaxTextSize="12sp"
-                app:autoSizeMinTextSize="8sp"
-                app:autoSizeTextType="uniform"
-                app:layout_constraintBottom_toTopOf="@id/additionalInformationTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-
-                tools:text="측정소 위치: 서욼 강남대로..." />
-
-
-            <TextView
-                android:id="@+id/additionalInformationTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:alpha="0.3"
-                android:background="@color/black"
-                android:drawablePadding="6dp"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="6dp"
-                android:text="자료 출처 : 환경부/한국환경공 \n 기관이 제공하는 자료는 인증을 받지 않은 실시간자료이므로 자료 오류 및 표출방식에 따라 값이 다를 수 있음을 명시해야 함(약관 제8조)"
-                android:textColor="@color/white"
-                android:textSize="8sp"
-                app:drawableStartCompat="@drawable/ic_baseline_info_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:ignore="HardcodedText,SmallSp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>

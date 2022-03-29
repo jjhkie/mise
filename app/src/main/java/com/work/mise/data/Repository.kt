@@ -6,7 +6,6 @@ import com.work.mise.BuildConfig
 import com.work.mise.data.model.airquality.MeasuredValue
 import com.work.mise.data.model.monitoringstation.MonitoringStation
 import com.work.mise.data.model.weathers.Item
-import com.work.mise.data.model.weathers.Items
 import com.work.mise.data.services.AirKoreaApiService
 import com.work.mise.data.services.WeatherAPIService
 import com.work.mise.data.services.kakaoLocalApiService
@@ -45,23 +44,14 @@ object Repository {
     }
 
     //날씨 정보 확인
-    suspend fun getWeatherData(longitude: Double, latitude: Double): Any {
-        val tmCoordinates = kakaoLocalApiService
-            .getTmCoordinates(longitude, latitude)
-            .body()
-            ?.documents//배열로 되어있다.
-            ?.firstOrNull()
+//    suspend fun getWeatherData(longitude: Double, latitude: Double): Item?=
+//        weatherApiService
+//            .doGetJsonDataWeather(longitude,latitude,1100,20220329)
+//            .body()
+//            ?.response
+//            ?.body
+//            ?.item
 
-        val nx = tmCoordinates?.x
-        val ny = tmCoordinates?.y
-
-
-        return 0
-
-
-
-
-    }
 
     suspend fun getLatestAirQualityData(stationName: String): MeasuredValue? =
         airKoreaApiService

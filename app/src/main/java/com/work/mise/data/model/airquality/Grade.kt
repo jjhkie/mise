@@ -10,18 +10,18 @@ enum class Grade(
     @ColorRes val colorResId: Int
 ) {
     @SerializedName("1")
-    GOOD("좋음", "😁", R.color.blue),
+    GOOD("좋음", "😊", R.color.white),
 
     @SerializedName("2")
-    NORMAL("보통","😊",R.color.green),
+    NORMAL("보통","😊",R.color.white),
 
     @SerializedName("3")
-    BAD("나쁨","😅",R.color.yellow),
+    BAD("나쁨","😅",R.color.white),
 
     @SerializedName("4")
-    AWFUL("매우 나쁨","😱",R.color.red),
+    AWFUL("매우 나쁨","😱",R.color.white),
 
-    UNKNOWN("미측정","🤔",R.color.gray);
+    UNKNOWN("미측정","🤔",R.color.white);
 
     override fun toString(): String {
         return "$label $emoji"
