@@ -43,15 +43,6 @@ object Repository {
             ?.minByOrNull { it.tm ?: Double.MAX_VALUE }
     }
 
-    //날씨 정보 확인
-//    suspend fun getWeatherData(longitude: Double, latitude: Double): Item?=
-//        weatherApiService
-//            .doGetJsonDataWeather(longitude,latitude,1100,20220329)
-//            .body()
-//            ?.response
-//            ?.body
-//            ?.item
-
 
     suspend fun getLatestAirQualityData(stationName: String): MeasuredValue? =
         airKoreaApiService

@@ -19,8 +19,6 @@ import com.work.mise.data.Url
 import com.work.mise.data.model.airquality.Grade
 import com.work.mise.data.model.airquality.MeasuredValue
 import com.work.mise.data.model.monitoringstation.MonitoringStation
-import com.work.mise.data.model.weather.WeatherResponse
-import com.work.mise.data.model.weathers.Item
 import com.work.mise.data.model.weathers.WeathersResponse
 import com.work.mise.data.services.WeatherAPIService
 import com.work.mise.databinding.ActivityMainBinding
@@ -50,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
 
     //TODO 삭제 예정
-    val base_time = 1100
+    val base_time = 1700
     val base_date = 20220329
     val lon = "139"
     val openap = "b4da17e419f46ae14f73118872b2a31d"
@@ -222,9 +220,22 @@ class MainActivity : AppCompatActivity() {
                                     it.response!!.body!!.items!!.item!!.forEach{
                                         Log.d("weather", it.toString())
                                         when(it.category ){
-                                            "TMP" -> binding.categoryTmpText.text = it.fcstValue +"℃"
+                                            "TMP" -> binding.categoryTmpText.text = it.fcstValue +" ℃"
                                             "POP" -> binding.rainPOPText.text = it.fcstValue+"%"
-                                            "SKY" ->""
+                                            "SKY" ->if (it.fcstValue!!.toInt() < 6){
+                                                if(base_time>1600){
+                                                    binding.skyStateImage.setBackgroundResource(R.drawable.sunny_icon)
+                                                    binding.skyStateText.text = "The sky is clear"
+                                                }else
+                                                binding.skyStateText.text = "The sky is clear"
+                                                binding.skyStateImage.setBackgroundResource(R.drawable.cloudy_sun_icon)
+                                            }else if(it.fcstValue!!.toInt() < 9 ){
+                                                binding.skyStateText.text = "mostly cloudy"
+                                                binding.skyStateImage.setBackgroundResource(R.drawable.cloudy_sun_icon)
+                                            }else{
+                                                binding.skyStateText.text = "The sky has become overcast."
+                                                binding.skyStateImage.setBackgroundResource(R.drawable.clouds_weather)
+                                            }
                                             "WSD" ->binding.windWSDText.text = it.fcstValue +"m/s"
                                         }
                                     }
@@ -239,14 +250,6 @@ class MainActivity : AppCompatActivity() {
                         }
 
                     })
-
-
-                    //add weather
-//                    val weatherValue =
-//                        Repository.getWeatherData(location.longitude, location.latitude)
-
-
-                    //Log.d("weather","리스트값입니다."+weatherlist.toString())
 
 
                     displayAirQualityData(monitoringStation, measuredValue!!)
@@ -277,9 +280,9 @@ class MainActivity : AppCompatActivity() {
         }
         with(measuredValue) {
             binding.fineDustInformationTextView.text =
-                "미세먼지: $pm10Value ㎍/㎥ ${(pm10Grade ?: Grade.UNKNOWN).emoji}"
+                " $pm10Value ㎍/㎥ "
             binding.ultraFineDustInformationTextView.text =
-                "초미세먼지: $pm25Value ㎍/㎥ ${(pm25Grade ?: Grade.UNKNOWN).emoji}"
+                " $pm25Value ㎍/㎥ "
 
             with(binding.so2Item) {
                 labelTextView.text = "아황산가스"
