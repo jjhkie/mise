@@ -9,8 +9,8 @@
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/shape_layout_radius.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/shape_widget_background.xml" value="0.104" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.165" />
-        <entry key="app/src/main/res/layout/view_measured_item.xml" value="0.16302083333333334" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.2654296875" />
+        <entry key="app/src/main/res/layout/view_measured_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/view_weather_center_item.xml" value="0.17552083333333332" />
         <entry key="app/src/main/res/layout/widget_simple.xml" value="0.375" />
         <entry key="app/src/main/res/xml/widget_simple_info.xml" value="0.20833333333333334" />

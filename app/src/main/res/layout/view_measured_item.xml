@@ -5,38 +5,42 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="horizontal"
-    android:paddingHorizontal="10dp"
-    android:paddingVertical="8dp"
-    tools:background="@color/blue">
+    android:paddingVertical="5dp"
+    android:paddingHorizontal="10dp">
 
     <TextView
-        android:gravity="center"
         android:id="@+id/labelTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:gravity="start"
         android:layout_weight="1"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="12sp"
+        android:textStyle="bold"
         tools:text="아황산가스" />
 
-    <TextView
-
-        android:id="@+id/gradeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:scaleType="centerInside"
+        android:id="@+id/gradeImageView"
+        android:layout_width="15dp"
+        android:layout_height="20dp"
         android:gravity="center"
-        android:layout_weight="1"
-        android:textColor="@color/white"
-        android:textSize="12sp" />
+        android:textColor="@color/black"
+        android:maxWidth="10dp"
+
+        android:src="@drawable/rain_icons"
+        />
+
+
+
 
     <TextView
-
+android:layout_weight="1"
         android:id="@+id/valueTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:textColor="@color/white"
+        android:gravity="end"
+        android:textColor="@color/black"
         android:textSize="12sp"
         tools:text="130ppm" />
 </LinearLayout>

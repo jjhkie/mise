@@ -11,8 +11,8 @@ interface WeatherAPIService {
     +"?serviceKey=${BuildConfig.WEATHER_API_KEY}"
     +"&dataType=json")
     fun doGetJsonDataWeather(
-        @Query("base_date") base_date: Int,
-        @Query("base_time") base_time: Int,
+        @Query("base_date") base_date: String,
+        @Query("base_time") base_time: String,
         @Query("nx") nx: Int,
         @Query("ny") ny: Int
     ): Call<WeathersResponse>

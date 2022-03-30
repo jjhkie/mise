@@ -81,7 +81,7 @@ class SimpleWidgetProvider : AppWidgetProvider() {
                             setViewVisibility(R.id.gradeLabelTextView, View.VISIBLE)
 
                             val currentGrade = (measuredValue?.khaiGrade ?: Grade.UNKNOWN)
-                            setTextViewText(R.id.resultTextView, currentGrade.emoji)
+                            //setTextViewText(R.id.resultTextView, currentGrade.emoji)
                             setTextViewText(R.id.gradeLabelTextView, currentGrade.label)
                         }
 

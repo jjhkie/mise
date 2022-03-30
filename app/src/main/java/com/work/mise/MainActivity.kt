@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.viewbinding.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -46,12 +47,13 @@ class MainActivity : AppCompatActivity() {
     private val scope = MainScope()
 
 
+    private lateinit var baseTime: String
+    private lateinit var baseDate: String
 
-    //TODO 삭제 예정
-    val base_time = 1700
-    val base_date = 20220329
-    val lon = "139"
-    val openap = "b4da17e419f46ae14f73118872b2a31d"
+    //val base_time = 1700
+    //val base_date = 20220329
+
+
     //logging 하는 코드
     private fun buildHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
@@ -66,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                 }
             )
             .build()
+
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,14 +78,23 @@ class MainActivity : AppCompatActivity() {
         //현재 날짜 시간 구하기
         val current: Long = System.currentTimeMillis()
 
-        val time = SimpleDateFormat("HHmm")
-        val today = SimpleDateFormat()
+        val time = SimpleDateFormat("HH00").format(current)
+        baseDate = SimpleDateFormat("yyyyMMdd").format(current)
+
+        when (time) {
+            "0000", "0100", "0200", "0300", "0400", "0500" -> baseTime = "2300"
+            "0600", "0700", "0800" -> baseTime = "0500"
+            "0900", "1000", "1100" -> baseTime = "0800"
+            "1200", "1300", "1400" -> baseTime = "1100"
+            "1500", "1600", "1700" -> baseTime = "1400"
+            "1800", "1900", "2000" -> baseTime = "1700"
+            "2100", "2200", "2300" -> baseTime = "2000"
+        }
+
 
         bindViews()
         initVariables()
         requestLocationPermissions()
-
-
 
 
     }
@@ -189,9 +201,10 @@ class MainActivity : AppCompatActivity() {
                     val measuredValue =
                         Repository.getLatestAirQualityData(monitoringStation!!.stationName!!)
 
-                    val tmp : LatXLngY =convertGRID_GPS(TO_GRID,location.latitude,location.longitude)
-                    Log.d("weather", "변환값 "+tmp.x.toInt())
-                    Log.d("weather", "변환값 "+tmp.y.toInt())
+                    val tmp: LatXLngY =
+                        convertGRID_GPS(TO_GRID, location.latitude, location.longitude)
+                    Log.d("weather", "변환값 " + tmp.x.toInt())
+                    Log.d("weather", "변환값 " + tmp.y.toInt())
 
 
                     val retrofit = Retrofit.Builder()
@@ -202,51 +215,63 @@ class MainActivity : AppCompatActivity() {
 
                     val weatherService = retrofit.create(WeatherAPIService::class.java)
 
-                    val cu_weather = weatherService.doGetJsonDataWeather(base_date,base_time,tmp.x.toInt(),tmp.y.toInt())
+                    val cu_weather = weatherService.doGetJsonDataWeather(
+                        baseDate,
+                        baseTime,
+                        tmp.x.toInt(),
+                        tmp.y.toInt()
+                    )
                     //val open_weather = weatherService.doGetJsonDataWeather(location.longitude,location.latitude,openap)
 
                     //val wea :JSONObject = JSONObject(items)
                     //Log.d("weather","1"+open_weather.toString())
-                    Log.d("weather","2"+measuredValue.toString())
+                    Log.d("weather", "2" + measuredValue.toString())
 
-                    cu_weather.enqueue(object:retrofit2.Callback<WeathersResponse>{
+                    cu_weather.enqueue(object : retrofit2.Callback<WeathersResponse> {
                         override fun onResponse(
                             call: Call<WeathersResponse>,
                             response: Response<WeathersResponse>
                         ) {
-                            if(response.isSuccessful){
-                                Log.d("weather","이거는" + response.body())
-                                response.body()?.let{
-                                    it.response!!.body!!.items!!.item!!.forEach{
+                            if (response.isSuccessful) {
+                                Log.d("weather", "이거는" + response.body())
+                                response.body()?.let {
+                                    it.response!!.body!!.items!!.item!!.forEach {
                                         Log.d("weather", it.toString())
-                                        when(it.category ){
-                                            "TMP" -> binding.categoryTmpText.text = it.fcstValue +" ℃"
-                                            "POP" -> binding.rainPOPText.text = it.fcstValue+"%"
-                                            "SKY" ->if (it.fcstValue!!.toInt() < 6){
-                                                if(base_time>1600){
-                                                    binding.skyStateImage.setBackgroundResource(R.drawable.sunny_icon)
+                                        when (it.category) {
+                                            "TMP" -> binding.categoryTmpText.text =
+                                                it.fcstValue + "℃"
+                                            "POP" -> binding.rainPOPText.text = it.fcstValue + "%"
+                                            "SKY" -> if (it.fcstValue!!.toInt() < 6) {
+                                                if (baseTime.toInt() > 1800 || baseTime.toInt() < 400) {
+                                                    binding.skyStateImage.setBackgroundResource(R.drawable.night_icon)
                                                     binding.skyStateText.text = "The sky is clear"
-                                                }else
-                                                binding.skyStateText.text = "The sky is clear"
-                                                binding.skyStateImage.setBackgroundResource(R.drawable.cloudy_sun_icon)
-                                            }else if(it.fcstValue!!.toInt() < 9 ){
-                                                binding.skyStateText.text = "mostly cloudy"
-                                                binding.skyStateImage.setBackgroundResource(R.drawable.cloudy_sun_icon)
-                                            }else{
-                                                binding.skyStateText.text = "The sky has become overcast."
+                                                } else {
+                                                    binding.skyStateText.text = "The sky is clear"
+                                                    binding.skyStateImage.setBackgroundResource(R.drawable.sunny_icon)
+                                                }
+                                            } else if (it.fcstValue!!.toInt() < 9) {
+                                                if (baseTime.toInt() > 1800 || baseTime.toInt() < 400) {
+                                                    binding.skyStateImage.setBackgroundResource(R.drawable.cloudy_night_deep)
+                                                    binding.skyStateText.text = "mostly cloudy"
+                                                } else {
+                                                    binding.skyStateText.text = "mostly cloudy"
+                                                    binding.skyStateImage.setBackgroundResource(R.drawable.cloudy_sun_icon)
+                                                }
+                                            } else {
+                                                binding.skyStateText.text ="The sky has become overcast."
                                                 binding.skyStateImage.setBackgroundResource(R.drawable.clouds_weather)
                                             }
-                                            "WSD" ->binding.windWSDText.text = it.fcstValue +"m/s"
+                                            "WSD" -> binding.windWSDText.text = it.fcstValue + "m/s"
                                         }
                                     }
                                 }
-                            }else{
-                                Log.d("weather","실패야..")
+                            } else {
+                                Log.d("weather", "실패야..")
                             }
                         }
 
                         override fun onFailure(call: Call<WeathersResponse>, t: Throwable) {
-                            Log.d("weather","실패했습니다")
+                            Log.d("weather", "실패했습니다")
                         }
 
                     })
@@ -276,7 +301,7 @@ class MainActivity : AppCompatActivity() {
         (measuredValue.khaiGrade ?: Grade.UNKNOWN).let { grade ->
             binding.root.setBackgroundResource(grade.colorResId)
             binding.totalGradeLabelTextView.text = grade.label
-            binding.totalGradeEmojiTextView.text = grade.emoji
+            //binding.totalGradeEmojiTextView.text = grade.emoji
         }
         with(measuredValue) {
             binding.fineDustInformationTextView.text =
@@ -286,22 +311,23 @@ class MainActivity : AppCompatActivity() {
 
             with(binding.so2Item) {
                 labelTextView.text = "아황산가스"
-                gradeTextView.text = (so2Grade ?: Grade.UNKNOWN).toString()
+                gradeImageView.setImageResource((so2Grade ?: Grade.UNKNOWN).emoji)
+                //gradeTextView.text = (so2Grade ?: Grade.UNKNOWN).toString()
                 valueTextView.text = "$so2Value ppm"
             }
             with(binding.coItem) {
                 labelTextView.text = "일산화탄소"
-                gradeTextView.text = (coGrade ?: Grade.UNKNOWN).toString()
+                gradeImageView.setImageResource((coGrade ?: Grade.UNKNOWN).emoji)
                 valueTextView.text = "$coValue ppm"
             }
             with(binding.o3Item) {
                 labelTextView.text = "오존"
-                gradeTextView.text = (o3Grade ?: Grade.UNKNOWN).toString()
+                gradeImageView.setImageResource((o3Grade ?: Grade.UNKNOWN).emoji)
                 valueTextView.text = "$o3Value ppm"
             }
             with(binding.no2Item) {
                 labelTextView.text = "이산화질소"
-                gradeTextView.text = (no2Grade ?: Grade.UNKNOWN).toString()
+                gradeImageView.setImageResource((no2Grade ?: Grade.UNKNOWN).emoji)
                 valueTextView.text = "$no2Value ppm"
             }
         }
@@ -391,3 +417,5 @@ class MainActivity : AppCompatActivity() {
 
 
 }
+
+
